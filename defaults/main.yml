@@ -1,0 +1,7 @@
+relayhost: smtp.mailgun.org
+relayport: 2525
+smtp_user: invalid
+smtp_password: invalid
+aliases:
+- { alias: invalid, mailto: invalid@foobar.invalid }
+

@@ -1,0 +1,26 @@
+---
+- name: update apt cache
+  apt: update_cache=yes
+- name: install postfix and libsasl2-modules
+  apt: name={{item}} state=present
+  with_items:
+    - postfix
+    - libsasl2-modules
+- name: template files
+  template:
+    src: "{{ role_path }}/templates/{{item.src}}.j2"
+    dest: "/etc/{{item.dest}}"
+    mode: 0644
+  with_items:
+  - { src: "main.cf", dest: "postfix/main.cf" }
+  - { src: "sasl_passwd", dest: "postfix/sasl_passwd" }
+  - { src: "aliases", dest: "aliases" }
+  - { src: "mailname", dest: "mailname" }
+- name: turn it into sasl_passwd.db
+  command: /usr/sbin/postmap -r /etc/postfix/sasl_passwd
+- name: remove temporary sasl_password
+  file: path="/etc/postfix/sasl_passwd" state=absent
+- name: process aliases
+  command: /usr/bin/newaliases
+- name: restart postfix
+  service: name=postfix enabled=yes state=restarted 
