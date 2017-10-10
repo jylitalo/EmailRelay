@@ -13,16 +13,24 @@
     mode: 0644
   with_items:
   - { src: "main.cf", dest: "postfix/main.cf" }
-  - { src: "aliases", dest: "aliases" }
   - { src: "mailname", dest: "mailname" }
+  notify:
+  - restart postfix
+- name: update aliases file
+  template:
+    src: "{{ role_path }}/templates/aliases.j2"
+    dest: "/etc/aliases"
+    mode: 0644
+  notify:
+  - process aliases
+  - restart postfix
 - name: update sasl_passwd
   sasl_passwd:
     name: "/etc/postfix/sasl_passwd"
     host: "{{relayhost}}"
     user: "{{smtp_user}}"
     password: "{{smtp_password}}"
-  register: sasl
-- name: process aliases
-  command: /usr/bin/newaliases
-- name: restart postfix
-  service: name=postfix enabled=yes state=restarted 
+  notify:
+  - restart postfix
+- name: postfix enabled and running
+  service: name=postfix enabled=yes state=started

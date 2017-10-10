@@ -1,2 +1,6 @@
 ---
 # handlers file for EmailRelay
+- name: process aliases
+  command: /usr/bin/newaliases
+- name: restart postfix
+  service: name=postfix enabled=yes state=restarted
