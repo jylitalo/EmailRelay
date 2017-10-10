@@ -13,13 +13,15 @@
     mode: 0644
   with_items:
   - { src: "main.cf", dest: "postfix/main.cf" }
-  - { src: "sasl_passwd", dest: "postfix/sasl_passwd" }
   - { src: "aliases", dest: "aliases" }
   - { src: "mailname", dest: "mailname" }
-- name: turn it into sasl_passwd.db
-  command: /usr/sbin/postmap -r /etc/postfix/sasl_passwd
-- name: remove temporary sasl_password
-  file: path="/etc/postfix/sasl_passwd" state=absent
+- name: update sasl_passwd
+  sasl_passwd:
+    name: "/etc/postfix/sasl_passwd"
+    host: "{{relayhost}}"
+    user: "{{smtp_user}}"
+    password: "{{smtp_password}}"
+  register: sasl
 - name: process aliases
   command: /usr/bin/newaliases
 - name: restart postfix
