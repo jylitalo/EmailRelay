@@ -28,6 +28,7 @@
   sasl_passwd:
     name: "/etc/postfix/sasl_passwd"
     host: "{{relayhost}}"
+    port: "{{relayport}}"
     user: "{{smtp_user}}"
     password: "{{smtp_password}}"
   notify:
